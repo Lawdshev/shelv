@@ -6,7 +6,7 @@ import * as bcrypt from "../../helpers/bcrypt";
 import { logger } from "../../log/logger";
 import * as model from "../../model";
 import { GraphResponse } from "../../types/misc/graphql";
-import { ILogin } from "../../types/user/auth";
+import { ILogin, IPasswordReset } from "../../types/user/auth";
 import * as jwt from "../../helpers/jwt";
 import { IContext } from "../../types/misc/generic";
 import { validateAccess } from "../../middleware/authenticate";
@@ -127,7 +127,7 @@ export const deleteuser = async (
   try {
     const access = validateAccess(context.user as IUser);
     if (!access.status) {
-      return response.sendErrorResponse(access.message, 400);
+      return response.sendErrorResponse(access.message, 401);
     }
 
     const deletionQuery = {
@@ -156,4 +156,3 @@ export const deleteuser = async (
     return response.sendErrorResponse(error.message, 500);
   }
 };
-

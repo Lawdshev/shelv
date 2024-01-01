@@ -37,8 +37,33 @@ const schema = new mongoose.Schema<TUser>(
       $type: Boolean,
       default: false,
     },
+    ownedFolders: {
+      $type: [
+        {
+          folder: {
+            $type: mongoose.Schema.Types.ObjectId,
+            ref: "Folder",
+          },
+        },
+      ],
+      default: [],
+    },
+    sharedWithMe: {
+      $type: [
+        {
+          folder: {
+            $type: mongoose.Schema.Types.ObjectId,
+            ref: "Folder",
+          },
+          permissions: {
+            $type: [String],
+            enum: Role,
+          },
+        },
+      ],
+      default: [],
+    }
   },
-
   {
     timestamps: true,
     typeKey: "$type",

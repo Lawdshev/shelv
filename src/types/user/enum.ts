@@ -5,6 +5,11 @@ export enum AccountType {
 
 export enum Role {
   Admin = "admin",
-  User = "user",
-  Manager = "manager",
+  Read = "read",
+  Write = "write",
+}
+
+export enum FolderType{
+  Folder = "FOLDER",
+  File = "FILE"
 }

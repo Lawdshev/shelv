@@ -5,6 +5,14 @@ export default `
         firstName: String
         lastName: String
         email: String
+        type: String
+        ownedFolders: [String]
+        sharedWithMe: [SharedWithMe]
+    }
+
+    type SharedWithMe {
+        folder: ID
+        permissions: [String]
     }
 
         input NewUser {
@@ -54,9 +62,6 @@ export default `
     union RespondWithUserAndToken = Error | ResponseWithUserAndToken
     union Respond = Error | Response
 
-    type Query {
-        getProfile: User
-    }
 
     type Mutation {
         register(input: NewUser!): RespondWithUser!

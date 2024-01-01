@@ -5,6 +5,8 @@ export enum GraphResponse {
   Respond = "Response",
   RespondWithUserAndToken = "ResponseWithUserAndToken",
   RespondWithUser = "ResponseWithUser",
+  RespondWithFolder = "ResponseWithFolder",
+  RespondWithFolderAndPermissions = "ResponseWithFolderAndPermissions",
 }
 
 export interface GraphError {

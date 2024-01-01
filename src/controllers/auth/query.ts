@@ -1,3 +1,2 @@
-export const getProfile = async() => {
-  console.log("getProfile")  
-}
+import { validateAccess } from "../../middleware/authenticate";
+import { IContext } from "../../types/misc/generic";
