@@ -3,7 +3,7 @@ import *  as model from "../model";
 import * as Response from "../helpers/response";
 import { logger } from "../log/logger";
 
-async function markFoldersAsTrash(rootFolderId: mongoose.Schema.Types.ObjectId | string) {
+export  default async function markFoldersAsTrash(rootFolderId: mongoose.Schema.Types.ObjectId | string) {
     if (!rootFolderId) {
         return Response.makeResponse(false, "folderId is required", {});
     }
@@ -31,4 +31,19 @@ async function markFoldersAsTrash(rootFolderId: mongoose.Schema.Types.ObjectId |
     }
 }
 
-export default markFoldersAsTrash
+// export async function restoreFolders(rootFolderId: mongoose.Schema.Types.ObjectId | string) {
+//   if (!rootFolderId) {
+//     return Response.makeResponse(false, "folderId is required", {});
+//   }
+
+//   try {
+//     const queue = [rootFolderId];
+//     while (queue.length > 0) {
+//       const currentFolderId = queue.shift();
+//       // Update the current folder to mark it as trash
+//       await model.folder.findByIdAndUpdate(currentFolderId, {
+//         trash: false,
+//         deletedAt: null,
+//       });
+//   }
+// }

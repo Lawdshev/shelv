@@ -130,9 +130,9 @@ export const renameFolder = async (
 
     // Check if folder exists
     const folder = await model.folder.findById(data.input.id);
-    if (!folder) {
+    if (!folder || folder.trash) {
       return response.sendErrorResponse("Folder not found", 404);
-    }
+    } 
 
     // Check user's permission to rename the folder
     const permission = await getPermissions(
@@ -188,7 +188,7 @@ export const changeParent = async (
     }
 
     const folder = await model.folder.findById(data.input.id);
-    if (!folder) {
+    if (!folder || folder.trash) {
       return response.sendErrorResponse("Folder not found", 404);
     }
 
@@ -273,73 +273,6 @@ export const changeParent = async (
   }
 };
 
-// export const deleteFolder = async (
-//   _: unknown,
-//   data: { input: IDeleteFolder },
-//   context: IContext
-// ) => {
-//   const access = validateAccess(context.user as IUser);
-//   if (!access.status) {
-//     return response.sendErrorResponse(access.message, 401);
-//   }
-
-//   if(!data.input.id) {
-//     return response.sendErrorResponse("Folder id is required", 400);
-//   }
-
-//   logger.debug(
-//     `start call to delete folder with payload ${JSON.stringify(
-//       data
-//     )} for user :: ${context.user?.email}`
-//   );
-
-//   try {
-//     const folderExist = await model.folder.findById(data.input.id);
-//     if (!folderExist) {
-//       return response.sendErrorResponse("Folder not found", 404);
-//     }
-//     const permission = await getPermissions(
-//       context.user as IUser,
-//       data.input.id
-//     );
-//     if (!permission.status || !permission.permission.admin) {
-//       return response.sendErrorResponse(
-//         "Permission denied to delete folder",
-//         403
-//       );
-//     }
-
-//     // Initialize the queue with the root folder ID
-//     const queue = [data.input.id];
-
-//     // Process the queue until it's empty
-//     while (queue.length > 0) {
-//       const currentFolderId = queue.shift();
-
-//       // Find the folder by ID
-//       const folder = await model.folder.findById(currentFolderId);
-
-//       if (folder && folder.children && folder.children.length > 0) {
-//         // Add children to the queue for further processing
-//         queue.push(...folder.children);
-
-//         // Delete the folder itself
-//         await model.folder.findByIdAndDelete(currentFolderId);
-//       }
-//     }
-
-//     logger.debug(`Folder deleted successfully`);
-//     return response.sendSuccessResponse(
-//       GraphResponse.Respond,
-//       "Folder and its contents deleted successfully",
-//       {}
-//     );
-//   } catch (error:any) {
-//     logger.error(`Error while deleting folder: ${error.message}`);
-//     return response.sendErrorResponse(error.message, 500);
-//   }
-// }
-
 export const deleteFolder = async (
   _: unknown,
   data: { input: IDeleteFolder },
@@ -373,3 +306,37 @@ export const deleteFolder = async (
     return response.sendErrorResponse(error.message, 500);
   }
 }
+
+
+// export const restoreFolder = async (
+//   _: unknown,
+//   data: { input: IDeleteFolder },
+//   context: IContext
+// ) => {
+//   try {
+//     const access = validateAccess(context.user as IUser);
+//     if (!access.status) {
+//       return response.sendErrorResponse(access.message, 401);
+//     }
+  
+//     const validation = validate(folderValidator.deleteManyFolder, data.input);
+//     if (!validation.status) {
+//       return response.sendErrorResponse(validation.message, 400);
+//     }
+    
+//     logger.debug(
+//       `start call to delete folder with payload ${JSON.stringify(
+//         data
+//       )} for user :: ${context.user?.email}`
+//     )
+    
+//     for (const id of data.input.ids) {
+//       await restoreFolders(id);
+//     }
+
+//     return response.sendSuccessResponse(GraphResponse.Respond, "Folder(s) restored successfully", {});
+//   } catch (error:any) {
+//     logger.error(`Error while deleting folder: ${error}`);
+//     return response.sendErrorResponse(error.message, 500);
+//   }
+// }

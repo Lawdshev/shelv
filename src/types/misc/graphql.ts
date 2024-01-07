@@ -7,6 +7,7 @@ export enum GraphResponse {
   RespondWithUser = "ResponseWithUser",
   RespondWithFolder = "ResponseWithFolder",
   RespondWithFolderAndPermissions = "ResponseWithFolderAndPermissions",
+  RespondWithFoldersAndPageDetails = "ResponseWithFoldersAndPageDetails",
 }
 
 export interface GraphError {

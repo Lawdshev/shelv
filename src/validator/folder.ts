@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { FolderType } from "../types/user/enum";
 import { IFolder } from "../types/user/user";
-import { IChangeFolderParent, IFolderRename, IRevokeAccess, IShareFolder, IDeleteFolder } from "../types/folder/folder";
+import { IChangeFolderParent, IFolderRename, IRevokeAccess, IShareFolder, IDeleteFolder, IGetRootFolders } from "../types/folder/folder";
 import { permissionType } from "../types/folder/enum";
 
 export const createFolder = Joi.object<IFolder>({
@@ -45,4 +45,15 @@ export const revokeAccess = Joi.object<IRevokeAccess>({
 
 export const deleteManyFolder = Joi.object<IDeleteFolder>({
    ids:Joi.array().required().items(Joi.string())
+})
+
+export const getRootFolders = Joi.object<IGetRootFolders>({
+  id: Joi.string(),
+  page: Joi.number(),
+  perPage: Joi.number(),
+  sort: Joi.object({
+    field: Joi.string().valid("createdAt","title"),
+    order: Joi.string().valid("asc", "desc"),
+  }),
+  filter: Joi.string()
 })

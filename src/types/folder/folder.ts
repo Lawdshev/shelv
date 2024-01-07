@@ -31,3 +31,14 @@ export interface IRevokeAccess {
 export interface IDeleteFolder {
   ids: mongoose.ObjectId[] | string[];
 }
+
+export interface IGetRootFolders {
+  id?: mongoose.ObjectId | string;
+  page?: number;
+  perPage?: number;
+  sort?: {
+    field: "createdAt" | "title";
+    order: "asc" | "desc";
+  };
+  filter?: string;
+}

@@ -22,6 +22,28 @@ export default `
         ids: [ID!]!
     }
 
+    input IFolderSettings {
+        id: String
+        page: Int
+        perPage: Int
+        sort: ISort
+        filter: String 
+    }
+
+    input ISort {
+        field: ISortField!
+        order: order!
+    }
+
+    enum ISortField {
+        createdAt
+        name
+    }
+    enum order {
+        asc
+        desc
+    }
+
     type Folder {
         name: String!
         parent: ID
@@ -69,13 +91,32 @@ export default `
         data: FolderWithPermissions
     }
 
-    
+    type PageDetails {
+        page: Int,
+        perPage: Int,
+        ItemsCount: Int,
+        totalItems: Int,
+        totalRemaining: Int,
+        nextPage: Int
+    }
+
+    type ResponseWithFoldersAndPageDetails {
+        message: String!
+        data: dataPagination
+    }
+
+    type dataPagination {
+        folders: [Folder]!
+        pageDetails: PageDetails
+    }
 
     union RespondWithFolder = Error | ResponseWithFolder
     union RespondWithFolderAndPermissions = Error | ResponseWithFolderAndPermissions
+    union RespondWithFoldersAndPageDetails = Error | ResponseWithFoldersAndPageDetails
 
     type Query {
         getFolder(id: ID!): RespondWithFolderAndPermissions
+        getFolders(input: IFolderSettings): RespondWithFoldersAndPageDetails
     }
 
     type Mutation {
