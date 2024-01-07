@@ -6,7 +6,7 @@ import * as bcrypt from "../../helpers/bcrypt";
 import { logger } from "../../log/logger";
 import * as model from "../../model";
 import { GraphResponse } from "../../types/misc/graphql";
-import { ILogin, IPasswordReset } from "../../types/user/auth";
+import { ILogin, IPasswordReset, IPasswordUpdate } from "../../types/user/auth";
 import * as jwt from "../../helpers/jwt";
 import { IContext } from "../../types/misc/generic";
 import { validateAccess } from "../../middleware/authenticate";
@@ -155,4 +155,88 @@ export const deleteuser = async (
     logger.error(`Error deleting user: ${error.message}`);
     return response.sendErrorResponse(error.message, 500);
   }
+};
+
+export const editUser = async (
+  _: unknown,
+  data: { input: IUser },
+  context: IContext
+)=> {
+  try {
+    logger.debug(`input is :: ${JSON.stringify(data.input)}`);
+    const access = validateAccess(context.user as IUser);
+    if (!access.status) {
+      return response.sendErrorResponse(access.message, 401);
+    }
+    
+     const validation = validate(authvalidator.editUser, data.input);
+     if (!validation.status) {
+       return response.sendErrorResponse(validation.message, 400);
+     }
+  
+   const user = await model.user.findOne({ _id: context.user?.id });
+   if (!user) {
+    return response.sendErrorResponse("User not found", 400);
+   }
+    
+   user.email = data.input.email || user.email;
+   user.firstName = data.input.firstName || user.firstName;
+    user.lastName = data.input.lastName || user.lastName;
+    
+    logger.debug(`JSON.stringify(user) :: ${JSON.stringify(user)}`);
+
+   await user.save();
+   
+   logger.debug(`end call to edit user ${context.user?.id}`);
+
+   return response.sendSuccessResponse(
+     GraphResponse.RespondWithUser,
+     "User updated successfully",
+     user
+   )
+
+} catch (error: any) {
+    logger.error(`Error updating user: ${error.message}`);
+    return response.sendErrorResponse(error.message, 500);
+}}
+
+
+export const updatePassword = async (
+  _: unknown,
+  data: { input: IPasswordUpdate },
+  context: IContext
+) => {
+ try {
+   const access = validateAccess(context.user as IUser);
+   if (!access.status) {
+     return response.sendErrorResponse(access.message, 401);
+   }
+
+   const validation = validate(authvalidator.updatePassword, data.input);
+   if (!validation.status) {
+     return response.sendErrorResponse(validation.message, 400);
+   }
+
+   logger.debug(`start call to update password for user ${context.user?.id}}`);
+
+   const user = await model.user.findOne({ _id: context.user?.id });
+   if (!user) {
+     return response.sendErrorResponse("User not found", 400);
+   }
+   let password = await bcrypt.generateHashedPassword(data.input.newPassword);
+
+   user.password = password;
+   await user.save();
+
+   logger.debug(`end call to update password for user ${context.user?.id}`);
+
+   return response.sendSuccessResponse(
+     GraphResponse.Respond,
+     "Password updated successfully",
+     {}
+   );
+ } catch (error:any) {
+   logger.error(`Error updating password: ${error.message}`);
+   return response.sendErrorResponse(error.message, 500);
+ }
 };

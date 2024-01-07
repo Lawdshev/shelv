@@ -3,25 +3,28 @@ export default `
 
     input NewFolder {
         name: String!
-        parent: ParentInput
+        parent: ID
         type: String!
         contentLink: String
-    }
-    input ParentInput {
-        id: ID!
-        path: String!
     }
 
     input renameFolderInput {
         id: ID!
         newName: String!       
     }
-   
+
+    input ChangeParentInput {
+        id: ID!
+        newParent: ID
+    }
+
+    input deleteFolderInput {
+        ids: [ID!]!
+    }
 
     type Folder {
         name: String!
-        parent: Parent
-        path: String
+        parent: ID
         children: [ID]
         type: String!
         contentLink: String
@@ -32,16 +35,12 @@ export default `
         updatedAt: DateTime
         createdBy: ID
         id: ID
-    }
-
-    type Parent {
-        id: ID
-       path: String
+        trash: Boolean
     }
 
     type SharedWith {
-    user: ID
-    permissions: [String]
+        user: ID
+        permissions: [String]
     }
 
     type AccessByLink {
@@ -82,5 +81,7 @@ export default `
     type Mutation {
         createFolder(input: NewFolder!): RespondWithFolder  
         renameFolder(input: renameFolderInput!): RespondWithFolder   
+        changeParent(input: ChangeParentInput!): RespondWithFolder
+        deleteFolder(input: deleteFolderInput!): Respond
     }
 `;

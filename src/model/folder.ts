@@ -3,6 +3,7 @@ import { TFolder } from "../types/user/user";
 import { ModelName } from "../types/misc/model";
 import { FolderType } from "../types/user/enum";
 
+
 const schema = new mongoose.Schema<TFolder>(
   {
     name: {
@@ -16,12 +17,12 @@ const schema = new mongoose.Schema<TFolder>(
       default: FolderType.Folder,
       uppercase: true,
       required: true,
-    } ,
+    },
     contentLink: {
       $type: String,
-      default: null, // If it is not a file, set to null
+      default: null,
       required: function () {
-        return this.type === FolderType.File; // Required only if it's a file
+        return this.type === FolderType.File;
       },
     },
     createdAt: {
@@ -38,28 +39,19 @@ const schema = new mongoose.Schema<TFolder>(
       required: true,
     },
     parent: {
-      $type: {
-        id: {
-          $type: mongoose.Schema.Types.ObjectId,
-          ref: ModelName.Folder,
-        },
-        path: {
-          $type: String,
-        }
-      },
-      default: null,
+      $type: mongoose.Schema.Types.ObjectId,
+      default: undefined,
     },
     children: {
-      $type:[mongoose.Schema.Types.ObjectId],
+      $type: [mongoose.Schema.Types.ObjectId],
       ref: ModelName.Folder,
-      default: null,
+      default: undefined,
     },
     isRoot: {
       $type: Boolean,
-      default:function () {
+      default: function () {
         return !!this.parent;
       },
-      
     },
     sharedWith: {
       $type: [
@@ -93,16 +85,15 @@ const schema = new mongoose.Schema<TFolder>(
         permissions: ["read"],
       },
     },
-    path:{
-    $type: String,
-    default: function () {
-      if (this.parent) {
-        return this.parent.path + "/" + this._id;
-      } else {
-        return this._id;
-      }
-    }
-    }
+    trash: {
+      $type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      $type: Date,
+      default: undefined,
+      expires: "1m",
+    },
   },
   {
     timestamps: true,
@@ -120,6 +111,8 @@ const schema = new mongoose.Schema<TFolder>(
   }
 );
 
+schema.index({ deletedAt: 1 }, { expireAfterSeconds: 0 }); // The 0 here is just a placeholder, as it will be replaced by the `expires` value in the field definition
+// toJSON method to customize the output format
 schema.methods.toJSON = function () {
   const obj = this.toObject();
   return {
@@ -127,5 +120,6 @@ schema.methods.toJSON = function () {
     ...obj,
   };
 };
+
 
 export default mongoose.model<TFolder>(ModelName.Folder, schema);

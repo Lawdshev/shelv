@@ -28,13 +28,14 @@ export interface IFolder {
   createdAt: Date;
   updatedAt: Date;
   createdBy: mongoose.ObjectId;
-  parent?: {id:mongoose.ObjectId, path:string} | null;
-  children?: mongoose.ObjectId[] | null;
+  parent?: mongoose.ObjectId | string | undefined;
+  children?: mongoose.ObjectId[] | undefined ;
   isRoot: boolean;
   sharedWith: { user: mongoose.ObjectId; permissions: Role }[];
   accessByLink: { access: boolean; permissions: string[] };
   contentLink: String | null;
-  path: String;
+  trash: boolean;
+  deletedAt?: Date | null;
 }
 
 

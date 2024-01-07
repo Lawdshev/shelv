@@ -33,6 +33,18 @@ export default `
         email: String
     }
 
+    input EditUser {
+        email: String
+        firstName: String
+        lastName: String
+    }
+
+    input PasswordUpdate {
+        oldPassword: String!
+        newPassword: String!
+        confirmPassword: String!
+    }
+
     type ResponseWithUser {
         message: String!
         data: User!
@@ -67,6 +79,8 @@ export default `
         register(input: NewUser!): RespondWithUser!
         login(input: Login!): RespondWithUserAndToken!
        deleteuser(input: Del!): Respond!
+       editUser(input: EditUser!): RespondWithUser!
+       updatePassword(input: PasswordUpdate!): Respond!
     }
 
 `;

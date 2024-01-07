@@ -16,7 +16,7 @@ export interface IRequestOTP {
 export interface IPasswordUpdate {
   oldPassword: string;
   newPassword: string;
-  ip: string;
+  confirmPassword: string;
 }
 
 export interface IPasswordReset {
@@ -25,4 +25,10 @@ export interface IPasswordReset {
   email: string;
   ip: string;
   referer: string;
+}
+
+export interface IUpdateUser{
+  email:string;
+  firstName:string;
+  lastName:string;
 }

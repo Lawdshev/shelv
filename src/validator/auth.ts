@@ -4,6 +4,7 @@ import {
   ILogin,
   IPasswordReset,
   IPasswordUpdate,
+  IUpdateUser
 } from "../types/user/auth";
 import { IUser } from "../types/user/user";
 import * as model from '../model';
@@ -53,6 +54,7 @@ export const updatePassword = Joi.object<IPasswordUpdate>({
         "Password must contain at least one number, one letter and one special character",
       "string.min": "Password must be at least 8 characters long",
     }),
+    confirmPassword: Joi.string().required().valid(Joi.ref("newPassword")),
   oldPassword: Joi.string().required(),
 }).required();
 
@@ -82,3 +84,8 @@ export const userExists = async (email: string): Promise<boolean> => {
     return !!existingUser; // Returns true if existingUser is truthy (user found), false otherwise
 };
 
+export const editUser = Joi.object<IUpdateUser>({
+  email: Joi.string().email(),
+  firstName: Joi.string(),
+  lastName: Joi.string(),
+})

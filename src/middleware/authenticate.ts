@@ -7,6 +7,7 @@ import { IContext, MakeResponse } from "../types/misc/generic";
 import { IUser } from "../types/user/user";
 import { GraphError } from "../types/misc/graphql";
 import { logger } from "../log/logger";
+import getFilePathById from "../helpers/folder";
 
 export default async (req: Request): Promise<IContext | GraphError> => {
   const ip = (req.headers["x-forwarded-for"] ||
@@ -123,26 +124,40 @@ export const getPermissions = async (
         message: "Access granted!",
         permission: {
           read:
-            publicAccess.permissions.includes("read") ||
-            privateAccess?.permissions.includes("read")
+            publicAccess?.permissions?.includes("read") ||
+            privateAccess?.permissions?.includes("read")
               ? true
               : false,
           write:
-            publicAccess.permissions.includes("write") ||
-            privateAccess?.permissions.includes("write")
+            publicAccess?.permissions?.includes("write") ||
+            privateAccess?.permissions?.includes("write")
               ? true
               : false,
           admin:
-            publicAccess.permissions.includes("admin") ||
-            privateAccess?.permissions.includes("admin")
+            publicAccess?.permissions?.includes("admin") ||
+            privateAccess?.permissions?.includes("admin")
               ? true
               : false,
         },
       };
     }
 
-    const path: String = folder.path;
-    const ancestors: string[] = path.split("/");
+    logger.debug(`user ${user.email} does not have direct access to folder ${folderId},checking for hierarchical access`);
+
+    const path = await getFilePathById(folderId);
+    if(!path){
+      return {
+        status: false,
+        message: "Could not get folder path!",
+        permission: {
+          read: false,
+          write: false,
+          admin: false,
+        },
+      };
+    }
+    
+    const ancestors: string[] = path.split("/").reverse();
 
     // Check for the nearest ancestral permission
     for (let i = ancestors.length - 1; i >= 0; i--) {
